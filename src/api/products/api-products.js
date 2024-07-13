@@ -1,20 +1,69 @@
 
+const fs = require("fs")
+
 const express = require("express")
 
 const router = express.Router()
 
+
+const archivoProductos = require("../../gestion-archivos/productos.js")
+
+const archivoGeneral =require ("../../gestion-archivos/general.js")
+
 //estos dos van en el archivo
-let products = [];
-let  idProduct = 0;
 
-router.put ("/products/:píd", (req,res)=>{
-    const id = parseInt(req.params.píd)
+
+
+
+
+
+
+
+
+router.put ("/products/:pid", (req,res)=>{
+    const id = parseInt(req.params.pid)
     const data = req.body
-    console.log("levanto los valores del cambio")
-
-    res.json({
-        message: "anda el put"
-       })
+    const products = archivoGeneral.getDataFromFile(archivoProductos.ruta)
+    console.log("estoy en el put")
+    console.log(id)
+    console.log(products)
+    const index = products.findIndex((pro)=> pro.id === id)
+    if (index !== -1){
+         
+        console.log("levanto los valores del cambio")
+        if (data.title){
+            products[index].name = data.title
+        }
+        if(data.description){
+            products[index].description = data.description
+        }
+        if(data.code){
+            products[index].code = data.code
+        }
+        if(data.price){
+            products[index].price = parseFloat(data.price)
+        }
+        if(data.status){
+            products[index].status = data.status === "false"? false: true
+        }
+        if(data.stock){
+            products[index].stock = parseInt(data.stock)
+        }
+        if(data.category){
+            products[index].category = data.category
+        }    
+        
+        archivoProductos.saveProductsOnFile(products,archivoProductos.ruta)
+        
+        res.json({
+        message: "se actualizo el producto"
+        })
+    }else{
+        res.json({
+        message: "El producto no existe"
+    })
+    }                         
+    
 })
 
 
@@ -23,9 +72,10 @@ router.put ("/products/:píd", (req,res)=>{
 router.get("/products", (req,res)=>{
      
     let {limit} = req.query;
-    
+    const products = archivoGeneral.getDataFromFile(archivoProductos.ruta)
+    console.log("estoy buscando ldo productos")
     if(products.length !== 0){
-        
+        console.log(products)    //sacar
         if(limit){
             limit = parseInt(limit)
             if(limit < products.length) {
@@ -45,7 +95,10 @@ router.get("/products", (req,res)=>{
 
 
 router.get("/products/:pid", (req,res)=>{
-    let id = parseInt(req.params.pid); 
+    let id = parseInt(req.params.pid)
+
+    const products = archivoGeneral.getDataFromFile(archivoProductos.ruta)
+
     const product = products.find((pro)=> (pro.id===id));
     if ( product !== undefined){       
         res.json({
@@ -53,7 +106,7 @@ router.get("/products/:pid", (req,res)=>{
         })
     }else{
         res.json({
-            mensaje:" no se envia nada"
+            mensaje:" No existe producto con ese ID"
         })
     }
 })
@@ -63,7 +116,7 @@ router.post("/products", (req,res)=>{
             //debo traer el id para agregarlo al producot
             const data = req.body
             let product= {};
-            idProduct++;
+            let nextId = archivoProductos.getNextId()
             if (data.title){
                 if(data.description){
                     if(data.code){
@@ -72,7 +125,7 @@ router.post("/products", (req,res)=>{
                                 if(data.stock){
                                     if(data.category){
                                          product = {
-                                            id:idProduct,
+                                            id: nextId,
                                             name: data.title,
                                             description: data.description,
                                             price: parseFloat(data.price),
@@ -107,17 +160,16 @@ router.post("/products", (req,res)=>{
                 res.send({status: "error", mensaje:"El campo Name es obligatorio"})
             }
 
-          products.push(product);
+          archivoProductos.updateProduct (product, archivoProductos.ruta);
+          nextId++
+          console.log("incremento id productos") //sacar
           res.send({status: "succes", mensaje:"Sedio de alta el producto"})
         
-         
-          
-            
             
 })
 
 
-
+//se elimina el codigo
 /*
 router.put("/:píd", (req,res)=>{
     const id = parseInt(req.params.id)
