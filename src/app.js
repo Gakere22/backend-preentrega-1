@@ -11,22 +11,50 @@ const cartsRouter = require ("./api/carts/api-carts.js");
 const archivoGeneral = require("./gestion-archivos/general.js");
 
 const archivoProductos = require ("./gestion-archivos/productos.js");
+
+const archivoCarts = require("./gestion-archivos/carts.js")
+
 const { error } = require("console");
 
-const rute = archivoProductos.ruta
-
-/*
-arcchivoGeneral.initializeFile(rute)
-console.log("inicialice archivo producots") //sacar
-
-*/
-
-archivoGeneral.createInitialBase(rute)
+const rutePro = archivoProductos.ruta
 
 
-const productos = archivoGeneral.getDataFromFile(rute)
+const ruteCart = archivoCarts.ruta
+
+
+archivoProductos.createInitialBase()
+
+archivoCarts.createInitialBase()
+
+console.log("levanto la data de productos ")
+
+console.log("esta es la ruta")
+
+console.log(rutePro)
+
+
+const productos = archivoGeneral.getDataFromFile(rutePro)
 
 console.log(productos)
+
+console.log("levanto la data de cart ")
+
+console.log("esta es la ruta")
+
+console.log(ruteCart)
+
+const carts = archivoGeneral.getDataFromFile(ruteCart)
+
+console.log(carts)
+
+
+/*
+const productos = archivoGeneral.getDataFromFile(rutePro)
+
+console.log(productos)
+*/
+
+
 /*
 productos
 .then(val=>console.log(val))
@@ -35,10 +63,9 @@ productos
 
 
 
-let nextId = archivoProductos.getNextId()
+let nextIdPro = archivoProductos.getNextId()
 
-
-console.log(nextId)
+console.log(nextIdPro)
 
 
 

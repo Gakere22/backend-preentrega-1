@@ -8,15 +8,13 @@ const fs = require ("fs")
  const data = require("./general")
 
  const ruta ='products.json'
-   //QUE PASA ACA?????
+
     function  getNextId(){  //ruta
         const  products = data.getDataFromFile(ruta)   
-        console.log("etoy en id")
-        console.log(products)
+       
         let max = 0
         if (products.length !== 0){
-        console.log("estoy en get id ")
-            
+         
             for(i=0; i < products.length;i++){
                 if(products[i].id > max){
                     max = products[i].id
@@ -42,14 +40,42 @@ const fs = require ("fs")
     function saveProductsOnFile(products){//ruta
          try {
             fs.writeFileSync(ruta, JSON.stringify(products),null, 2)
-            console.log("se guardo el archivo")
+            
         } catch (error) {
             
         }
     
     }
     
+    const obj = {
+        id: 1,
+        title:  "cambio  numero 100005",
+        description: " cambio descripcion nueva",
+        code:"10ajdh",
+        price: 9,
+        status: true,
+        stock:10 ,
+        category:"paquetes",
+        thumbnalis:""
+    }
   
+const arreglo = [obj]
+
+async function createInitialBase ()  {
+    const datosJson = JSON.stringify(arreglo)
+    
+    if (!fs.existsSync(ruta)){
+        fs.writeFileSync(ruta, datosJson,null,2)
+        
+        
+    }else{
+        console.log("el archivo PRODUCTOS tiene contenido")
+    }
+
+}
+
+
+
 
 
 
@@ -64,6 +90,7 @@ module.exports = {
     saveProductsOnFile, 
     updateProduct,
     getNextId,
-    ruta
+    ruta,
+    createInitialBase,
 }
 

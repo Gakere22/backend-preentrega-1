@@ -10,7 +10,7 @@ const archivoProductos = require("../../gestion-archivos/productos.js")
 
 const archivoGeneral =require ("../../gestion-archivos/general.js")
 
-//estos dos van en el archivo
+
 
 
 
@@ -24,13 +24,12 @@ router.put ("/products/:pid", (req,res)=>{
     const id = parseInt(req.params.pid)
     const data = req.body
     const products = archivoGeneral.getDataFromFile(archivoProductos.ruta)
-    console.log("estoy en el put")
-    console.log(id)
-    console.log(products)
+   
+    
     const index = products.findIndex((pro)=> pro.id === id)
     if (index !== -1){
          
-        console.log("levanto los valores del cambio")
+       
         if (data.title){
             products[index].name = data.title
         }
@@ -53,7 +52,7 @@ router.put ("/products/:pid", (req,res)=>{
             products[index].category = data.category
         }    
         
-        archivoProductos.saveProductsOnFile(products,archivoProductos.ruta)
+        archivoProductos.saveProductsOnFile(products)
         
         res.json({
         message: "se actualizo el producto"
@@ -73,9 +72,9 @@ router.get("/products", (req,res)=>{
      
     let {limit} = req.query;
     const products = archivoGeneral.getDataFromFile(archivoProductos.ruta)
-    console.log("estoy buscando ldo productos")
+    
     if(products.length !== 0){
-        console.log(products)    //sacar
+        
         if(limit){
             limit = parseInt(limit)
             if(limit < products.length) {
@@ -106,14 +105,14 @@ router.get("/products/:pid", (req,res)=>{
         })
     }else{
         res.json({
-            mensaje:" No existe producto con ese ID"
+            mensaje:" No existe producto con el ID"
         })
     }
 })
 
 
 router.post("/products", (req,res)=>{
-            //debo traer el id para agregarlo al producot
+            
             const data = req.body
             let product= {};
             let nextId = archivoProductos.getNextId()
@@ -134,9 +133,8 @@ router.post("/products", (req,res)=>{
                                             category: data.category,
                                             thumbnalis:  Boolean(data.thumbnalis)? data.thumbnalis : null 
                                         }
-                                        
+                                     
                                        
-
                                     }else{
                                         res.send({status: "error", mensaje:"El campo category es obligatorio"})
                                     }
@@ -162,89 +160,22 @@ router.post("/products", (req,res)=>{
 
           archivoProductos.updateProduct (product, archivoProductos.ruta);
           nextId++
-          console.log("incremento id productos") //sacar
-          res.send({status: "succes", mensaje:"Sedio de alta el producto"})
+          
+          res.send({status: "succes", mensaje:"Se dio de alta el producto"})
         
             
 })
 
 
-//se elimina el codigo
-/*
-router.put("/:píd", (req,res)=>{
-    const id = parseInt(req.params.id)
-    const data = req.body
-    console.log("levanto los valores del cambio")
-   
-    // traigo los productos desde el archivo
-    
-    const product = {}
-    
-
-    if(products.length !== 0 ){
-    //array productos y buscar producto por id
-        const index = products.findIndex((prod)=>(prod.id === id))
-        
-            if (index !== -1){
-            product = products[index]
-            console.log("encontre el producto")
-            if ((data.title) && (data.title !== product.name)){
-                product.name = data.title
-                console.log("encontre el nombre")
-            }
-            if((data.description) && (data.description !== product.description)){
-                product.description = data.description
-                console.log("encontre el cambio descripcion")
-            }    
-            if((data.code) && (data.code !== product.code)){
-                product.code = data.code   
-                console.log("encontre el codigo")
-            } 
-            if((data.price) && (data.price!== product.price)){
-                product.price = parseFloat(data.price)   
-                console.log("cambio el precio ") 
-            }    
-            if((data.status) && (data.status !== product.status)){
-                product.status = (data.status === "false"? false : true) 
-                console.log("cambio el status")
-                    
-            }    
-            if((data.stock) && (data.stock !== product.stock)){
-                product.stock = parseInt(data.stock)    
-                console.log("cambio el stock")
-            }  
-            if((data.category) && (data.category !== product.category)){
-                product.category = data.category    
-                console.log("cambio el categoria")
-            }  
-            if((data.thumbnalis) && (data.thumbnalis !== product.thumbnalis)){
-                product.thumbnalis = data.thumbnalis  
-                console.log("cambio el image")  
-            }  
-            
-            res.send({status:"success", message:"se modifico el productos"})
-
-        }else{
-            res.send({status:"error", menssage:"el produto no existe"})
-        }
-    }else{
-        res.send({status:"error", menssage:"la lsita de productos eta vacia"})
-    }
-    // si el producto existe modificarlo si no existe devolver mensaje que no existe
-    
-   res.json({
-    message: "anda el put"
-   })
-})
-*/
 
 
 router.delete("/products/:pid",(req,res)=>{
     const id = parseInt(req.params.pid)
+    products = archivoGeneral.getDataFromFile(archivoProductos.ruta)
     products =  products.filter((pro)=> pro.id !== id)
- 
+    archivoProductos.saveProductsOnFile(products)
 
-    res.json({ message:" se borro"})
+    res.json({ message:" se borro producto"})
 })
 
 
